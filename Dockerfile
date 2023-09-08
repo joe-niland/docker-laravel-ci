@@ -25,6 +25,8 @@ RUN apt-get -qq update && apt-get -qq install -y software-properties-common && \
     freetds-common libsybdb5 \
     # MySQL cli \
     mysql-client \
+    # PgSQL cli \
+    postgresql-client \
     # utils
     pwgen jq openssh-client git rsync zip unzip curl
 

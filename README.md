@@ -21,7 +21,13 @@ Based on https://github.com/joe-niland/docker-phusion-laravel-build
 
 ## Building
 
-`docker build -t joeniland/laravel-ci .`
+### PHP variant
+
+`docker build -t joeniland/laravel-ci php`
+
+### Docker variant
+
+`docker build -t joeniland/laravel-ci-docker docker`
 
 ## Testing
 
@@ -31,7 +37,7 @@ Based on https://github.com/joe-niland/docker-phusion-laravel-build
 
 For use with docker:
 
-`docker run --privileged --rm -it --mount src=$(pwd),target=/app,type=bind -v /var/run/docker.sock:/var/run/docker.sock -v /cache --workdir /app joeniland/laravel-ci docker run hello-world`
+`docker run --privileged --rm -it --mount src=$(pwd),target=/app,type=bind -v /var/run/docker.sock:/var/run/docker.sock -v /cache --workdir /app joeniland/laravel-ci-docker docker run hello-world`
 
 ### Run unit tests
 

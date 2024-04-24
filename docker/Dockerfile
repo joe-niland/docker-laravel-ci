@@ -1,3 +1,7 @@
+ARG DOCKER_VERSION=26.1.0
+
+FROM docker:${DOCKER_VERSION}-dind AS docker_image
+
 FROM joeniland/laravel-ci:latest
 
 USER root
@@ -6,8 +10,8 @@ ENV DOCKER_TLS_CERTDIR=/certs
 RUN mkdir /certs /certs/client && chmod 1777 /certs /certs/client
 
 # Get docker executables from official dind image
-COPY --from=docker:20.10.23-dind /usr/local/bin/ /usr/local/bin/
-COPY --from=docker:20.10.23-dind /usr/libexec/docker/cli-plugins /usr/libexec/docker/cli-plugins
+COPY --from=docker_image /usr/local/bin/ /usr/local/bin/
+COPY --from=docker_image /usr/local/libexec/docker/cli-plugins /usr/local/libexec/docker/cli-plugins
 
 COPY dockerd-entrypoint.sh /usr/local/bin/
 

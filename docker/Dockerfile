@@ -1,18 +1,24 @@
 ARG DOCKER_VERSION=26.1.0
+ARG PHP_VERSION=8.2
 
 FROM docker:${DOCKER_VERSION}-dind AS docker_image
 
-FROM joeniland/laravel-ci:latest
+FROM joeniland/laravel-ci:${PHP_VERSION}-latest
 
 USER root
 
 ENV DOCKER_TLS_CERTDIR=/certs
 RUN mkdir /certs /certs/client && chmod 1777 /certs /certs/client
 
+RUN addgroup --gid 2000 docker
+
 # Get docker executables from official dind image
 COPY --from=docker_image /usr/local/bin/ /usr/local/bin/
+# COPY --from=docker_image /usr/bin/ /usr/bin/
+# COPY --from=docker_image /usr/sbin/ /usr/bin/
 COPY --from=docker_image /usr/local/libexec/docker/cli-plugins /usr/local/libexec/docker/cli-plugins
 
+# RUN mv /usr/local/bin/dockerd-entrypoint.sh /usr/local/bin/base-dockerd-entrypoint.sh
 COPY dockerd-entrypoint.sh /usr/local/bin/
 
 VOLUME /var/lib/docker

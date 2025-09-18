@@ -1,9 +1,13 @@
 #!/bin/sh
+
 set -e
+
+# /usr/local/bin/base-dockerd-entrypoint.sh
 
 /usr/local/bin/dockerd \
 	--host=unix:///var/run/docker.sock \
-	--host=tcp://127.0.0.1:2375 &>/var/log/docker.log &
+	--host=tcp://127.0.0.1:2375 \
+	--storage-driver=overlay2 &>/var/log/docker.log &
 
 tries=0
 d_timeout=60
@@ -17,4 +21,4 @@ until docker info >/dev/null 2>&1; do
 	sleep 1
 done
 
-eval "$@"
+exec "$@"

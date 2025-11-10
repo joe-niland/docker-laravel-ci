@@ -1,6 +1,6 @@
 ARG PHP_BASE_VERSION=8.2
 
-FROM php:${PHP_BASE_VERSION}-cli-bookworm
+FROM php:${PHP_BASE_VERSION}-cli
 
 # redeclare for new stage
 ARG PHP_BASE_VERSION
@@ -54,8 +54,16 @@ RUN docker-php-ext-configure gd \
         --with-jpeg
 
 # Install SQL Server drivers
-RUN if [ "${PHP_BASE_VERSION}" = "7.3" ] || [ "${PHP_BASE_VERSION}" = "7.4" ]; then \
+RUN if [ "${PHP_BASE_VERSION}" = "7.3" ]; then \ 
         docker-php-ext-install -j$(nproc) sybase_ct; \
+    elif [ "${PHP_BASE_VERSION}" = "7.4" ]; then \
+        apt-get install -y --no-install-recommends \
+        freetds-bin \
+        freetds-dev \
+        unixodbc-dev && \
+        docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr && \
+        docker-php-ext-install pdo_odbc && \
+        docker-php-ext-enable pdo_odbc; \
     else \
         # Microsoft SQL Server Drivers
         # Add Microsoft GPG key
@@ -96,10 +104,13 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Update CLI PHP to use $PHP_VERSION
 RUN ln -sfn /usr/bin/php${PHP_BASE_VERSION} /etc/alternatives/php
 
-# # Set PHP timezone
-# ENV PHP_TIMEZONE=Australia\/Sydney
+# Set PHP timezone
+ENV PHP_TIMEZONE=UTC
 
-# RUN sed -i "s?;date.timezone =?date.timezone = ${PHP_TIMEZONE}?g" /etc/php/${PHP_BASE_VERSION}/cli/php.ini
+RUN sed -i "s?;date.timezone =?date.timezone = ${PHP_TIMEZONE}?g" /usr/local/etc/php/php.ini-production && \
+    sed -i "s?;date.timezone =?date.timezone = ${PHP_TIMEZONE}?g" /usr/local/etc/php/php.ini-development && \
+    cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
+    sed -i "s?;date.timezone =?date.timezone = ${PHP_TIMEZONE}?g" /usr/local/etc/php/php.ini
 
 # Composer
 
@@ -112,11 +123,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 RUN useradd -m build
 
 USER build
-
-# phpunit
-ENV PHP_UNIT_VERSION=10.5
-RUN composer global require "phpunit/phpunit:~${PHP_UNIT_VERSION}" --prefer-dist --no-interaction && \
-    export PATH="$(composer config -g home)/vendor/bin:$PATH"
 
 # Add volumes for the app
 VOLUME [ "/app" ]

@@ -1,10 +1,10 @@
 # docker-laravel-ci
 
-CI images for Laravel projects. Each image bundles the tooling a typical Laravel pipeline needs — PHP, Composer, Node, database clients and drivers, awscli, sentry-cli — so your CI jobs start testing instead of installing.
+CI images for Laravel projects. Each image bundles the tooling a typical Laravel pipeline needs: PHP, Composer, Node, database clients and drivers, awscli, sentry-cli.
 
 Images are published to Docker Hub: [joeniland/laravel-ci](https://hub.docker.com/r/joeniland/laravel-ci)
 
-If you need an image to *run* Laravel in production, use [serversideup/docker-php](https://github.com/serversideup/docker-php) instead. This project is only for CI pipelines.
+If you need an image to *run* Laravel in production, I recommend [serversideup/docker-php](https://github.com/serversideup/docker-php) instead. This project is only for CI pipelines.
 
 ## What's inside
 

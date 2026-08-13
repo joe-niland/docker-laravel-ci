@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     container: joeniland/laravel-ci:8.3-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: composer install --prefer-dist --no-interaction
       - run: npm ci && npm run build
       - run: vendor/bin/phpunit

@@ -14,7 +14,7 @@ RUN echo "Using PHP base version: ${PHP_BASE_VERSION}"
 # Install base packages
 RUN apt-get -qq update && \
     # curl -sSL https://packages.sury.org/php/README.txt | bash -x && \
-    apt-get -qq install -y --no-install-recommends software-properties-common gpg-agent lsb-release ca-certificates curl && \
+    apt-get -qq install -y --no-install-recommends gpg-agent lsb-release ca-certificates curl && \
     # curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
     # dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
     # sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
@@ -68,7 +68,7 @@ RUN if [ "${PHP_BASE_VERSION}" = "7.3" ]; then \
     else \
         # Microsoft SQL Server Drivers
         # Add Microsoft GPG key
-        curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
+        curl -fsSL https://packages.microsoft.com/keys/microsoft.asc https://packages.microsoft.com/keys/microsoft-2025.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
         # Add Microsoft repository
         curl -sSL https://packages.microsoft.com/config/debian/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
         # Update package lists and install driver
@@ -98,7 +98,7 @@ RUN mkdir -p /etc/apt/keyrings && \
     PATH="$PATH" && \
     # sass and Sentry CLI
     npm -g i --unsafe-perm --quiet sass@$NODE_SASS_VERSION @sentry/cli
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip &&  ./aws/install && rm -rf ./aws awscliv2.zip
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -128,5 +128,4 @@ USER build
 # Add volumes for the app
 VOLUME [ "/app" ]
 
-# Add HEALTHCHECK instruction
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD php -v || exit 1

@@ -26,4 +26,4 @@ VOLUME /var/lib/docker
 ENTRYPOINT ["dockerd-entrypoint.sh"]
 CMD []
 
-HEALTHCHECK --interval=10s --timeout=60s --start-period=5s --retries=3 CMD [ "docker info >/dev/null 2>&1" ]
+HEALTHCHECK --interval=10s --timeout=60s --start-period=5s --retries=3 CMD docker info >/dev/null 2>&1

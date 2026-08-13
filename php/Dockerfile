@@ -103,6 +103,11 @@ RUN mkdir -p /etc/apt/keyrings && \
     PATH="$PATH" && \
     # sass and Sentry CLI
     npm -g i --unsafe-perm --quiet sass@$NODE_SASS_VERSION @sentry/cli
+# AWS RDS CA bundle so clients can verify RDS TLS certs
+# (e.g. mysql --ssl-ca=/usr/local/share/rds-global-bundle.pem)
+RUN curl -sSfo /usr/local/share/rds-global-bundle.pem \
+    "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem"
+
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip &&  ./aws/install && rm -rf ./aws awscliv2.zip
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

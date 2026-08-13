@@ -57,6 +57,13 @@ preflight() {
 
 preflight
 
+# "both" builds php first, then docker on top of it, so the dind image
+# never bakes in a stale base.
+if [[ ${VARIANT} == "both" ]]; then
+    "$0" php "${VERSION}" "${PLATFORM}" "${PUSH}" "${ECR_REPO}" || exit $?
+    exec "$0" docker "${VERSION}" "${PLATFORM}" "${PUSH}" "${ECR_REPO}"
+fi
+
 # Platform handling
 if [[ ${PLATFORM} == "multiarch" ]]; then
     PLATFORMS="linux/amd64,linux/arm64"
@@ -163,7 +170,7 @@ if [[ $# -eq 0 ]]; then
     echo "  $0 php 8.3 multiarch true public.ecr.aws/my-repo"
     echo ""
     echo "Parameters:"
-    echo "  variant:  php or docker (default: php)"
+    echo "  variant:  php, docker, or both (default: php)"
     echo "  version:  PHP version (default: 8.3)"
     echo "  platform: multiarch, linux/amd64, or linux/arm64 (default: multiarch)"
     echo "  push:     true or false (default: false)"

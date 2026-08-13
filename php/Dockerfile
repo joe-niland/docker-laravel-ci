@@ -43,7 +43,7 @@ RUN apt-get -qq -y -o Dpkg::Options::="--force-confold" install --no-install-rec
     # PgSQL cli \
     postgresql-client libpq-dev \
     # utils
-    pwgen jq openssh-client git rsync zip unzip curl gnupg gettext-base  \
+    pwgen jq procps openssh-client git rsync zip unzip curl gnupg gettext-base  \
     iputils-ping netcat-openbsd dnsutils \
     # gd
     libpng-dev \
@@ -75,7 +75,12 @@ RUN if [ "${PHP_BASE_VERSION}" = "7.3" ]; then \
         apt-get update -qq && \
         ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18 && \
         # Install PHP extensions
-        pecl install sqlsrv pdo_sqlsrv && \
+        # sqlsrv >= 5.13 requires PHP 8.3; pin the last compatible release for older PHP
+        if php -r 'exit(PHP_VERSION_ID >= 80300 ? 0 : 1);'; then \
+            pecl install sqlsrv pdo_sqlsrv; \
+        else \
+            pecl install sqlsrv-5.12.0 pdo_sqlsrv-5.12.0; \
+        fi && \
         docker-php-ext-enable sqlsrv pdo_sqlsrv && \
         # Clean up
         apt-get clean && \

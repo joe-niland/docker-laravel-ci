@@ -58,6 +58,24 @@ pipelines:
           - vendor/bin/phpunit
 ```
 
+### AWS CodeBuild
+
+Set the project image to `joeniland/laravel-ci:8.3-latest` (or your ECR copy), then:
+
+```yaml
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - composer install --prefer-dist --no-interaction
+      - npm ci
+  build:
+    commands:
+      - npm run build
+      - vendor/bin/phpunit
+```
+
 ### Locally
 
 ```shell

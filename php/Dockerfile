@@ -30,6 +30,7 @@ RUN apt-get -qq -y -o Dpkg::Options::="--force-confold" install --no-install-rec
     # php
     libpng-dev \
     libzip-dev \
+    libicu-dev \
     # php8.1-zip \
     # php$PHP_VERSION-cli php$PHP_VERSION-common php$PHP_VERSION-apc \
     # php$PHP_VERSION-gd php$PHP_VERSION-xml php$PHP_VERSION-mbstring php$PHP_VERSION-curl php$PHP_VERSION-dev \
@@ -82,7 +83,7 @@ RUN if [ "${PHP_BASE_VERSION}" = "7.3" ]; then \
     fi
 
 RUN docker-php-ext-install -j$(nproc) \
-    zip pdo_mysql pdo_pgsql gd bcmath
+    zip pdo_mysql pdo_pgsql gd bcmath intl
 
 ENV NODE_VERSION=20 \
     NODE_SASS_VERSION=1.72.0
